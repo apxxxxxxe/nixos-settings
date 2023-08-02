@@ -10,6 +10,9 @@
       ./hardware-configuration.nix
     ];
 
+  # Tell Xorg to use the nvidia driver (also valid for Wayland)
+  services.xserver.videoDrivers = ["nvidia"];
+
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -39,8 +42,11 @@
   };
 
   i18n.inputMethod = {
-   enabled = "fcitx5";
-   # fcitx5.engines = with pkgs.fcitx-engines; [ mozc anthy ];
+    enabled = "fcitx5";
+    fcitx5.addons = with pkgs; [
+      fcitx5-mozc
+      fcitx5-gtk
+    ];
   };
 
   fonts = {
@@ -72,6 +78,7 @@
   services.blueman.enable = true;
 
   hardware = {
+    opengl.driSupport32Bit = true;
     pulseaudio.support32Bit = true;
     bluetooth.enable = true;
   };
@@ -167,7 +174,7 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  # services.openssh.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
