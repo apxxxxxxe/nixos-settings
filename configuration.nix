@@ -10,34 +10,6 @@
       ./hardware-configuration.nix
     ];
 
-  # ===== Nvidia GPU Settings =====
-  # Make sure opengl is enabled
-  hardware.opengl = {
-    enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
-  };
-
-  # Tell Xorg to use the nvidia driver (also valid for Wayland)
-  services.xserver.videoDrivers = ["nvidia"];
-
-  hardware.nvidia = {
-
-    # Modesetting is needed for most Wayland compositors
-    modesetting.enable = true;
-
-    # Use the open source version of the kernel module
-    # Only available on driver 515.43.04+
-    open = false;
-
-    # Enable the nvidia settings menu
-    nvidiaSettings = true;
-
-    # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
-  };
-  # ===== Nvidia GPU Settings END =====
-
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -86,7 +58,7 @@
     enable = true;
     displayManager.lightdm.enable = true;
     windowManager.i3.enable = true;
-    desktopManager.gnome.enable = true;
+    desktopManager.gnome.enable = false;
 
     # Configure keymap in X11
     layout = "us";
@@ -147,6 +119,21 @@
     # for fcitx5+mozc
     fcitx5-mozc
     fcitx5-anthy
+
+    # essential
+    go
+    deno
+    gh
+    google-chrome
+    neovim
+    wezterm
+    lazygit
+    fzf
+    ripgrep
+
+    # for i3
+    feh
+    dunst
   ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -156,21 +143,6 @@
     extraGroups = [ "networkmanager" "wheel" ];
     shell = pkgs.zsh;
     packages = with pkgs; [
-      # essential
-      go
-      deno
-      gh
-      google-chrome
-      neovim
-      wezterm
-      lazygit
-      fzf
-      ripgrep
-
-      # for i3
-      feh
-      dunst
-
       # painting
       azpainter
 
