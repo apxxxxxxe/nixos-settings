@@ -146,6 +146,7 @@
     # for i3
     feh
     dunst
+    (import ./pkgs/breeze-cursor-theme.nix {stdenv=stdenv; fetchzip=fetchzip;})
   ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
