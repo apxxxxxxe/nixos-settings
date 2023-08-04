@@ -13,15 +13,11 @@
   # Tell Xorg to use the nvidia driver (also valid for Wayland)
   services.xserver.videoDrivers = ["nvidia"];
 
-  networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  networking.networkmanager.enable = true;
+  networking = {
+    enable = true;
+    hostName = "nixos"; # Define your hostname.
+    # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  };
 
   # Set your time zone.
   time.timeZone = "Asia/Tokyo";
@@ -126,10 +122,6 @@
     unar
 
     blueman
-
-    # for fcitx5+mozc
-    fcitx5-mozc
-    fcitx5-anthy
 
     # essential
     go
