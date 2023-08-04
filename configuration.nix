@@ -76,16 +76,20 @@
 
   # bluetooth
   services.blueman.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  }
 
-  hardware = {
-    opengl.driSupport32Bit = true;
-    pulseaudio.support32Bit = true;
-    bluetooth.enable = true;
-  };
+  # for playonlinux and else
+  hardware.opengl.driSupport32Bit = true;
 
   # Enable sound with pipewire.
   sound.enable = true;
-  hardware.pulseaudio.enable = false;
+  hardware.pulseaudio = {
+    enable = false;
+    support32Bit = true;
+  };
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -114,14 +118,14 @@
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     git
+    git-filter-repo
+    gh
     curl
-    zsh
     gnumake
     unzip
     unar
 
-    bluez
-    bluez-tools
+    blueman
 
     # for fcitx5+mozc
     fcitx5-mozc
@@ -130,8 +134,9 @@
     # essential
     go
     deno
-    gh
     google-chrome
+    cargo
+    rustc
     neovim
     wezterm
     lazygit
