@@ -64,7 +64,7 @@
     enable = true;
     displayManager.lightdm.enable = true;
     windowManager.i3.enable = true;
-    desktopManager.gnome.enable = false;
+    displayManager.defaultSession = "none+i3";
 
     # Configure keymap in X11
     layout = "us";
@@ -79,7 +79,7 @@
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
-  }
+  };
 
   # for playonlinux and else
   hardware.opengl.driSupport32Bit = true;
