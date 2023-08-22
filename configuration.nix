@@ -13,8 +13,12 @@
   # Tell Xorg to use the nvidia driver (also valid for Wayland)
   services.xserver.videoDrivers = ["nvidia"];
 
+  # xbox controller
+  hardware.xpadneo.enable = true;
+
+  # Enable networking
   networking = {
-    enable = true;
+    networkmanager.enable = true;
     hostName = "nixos"; # Define your hostname.
     # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   };
@@ -60,7 +64,8 @@
     enable = true;
     displayManager.lightdm.enable = true;
     windowManager.i3.enable = true;
-    displayManager.defaultSession = "none+i3";
+    windowManager.awesome.enable = true;
+    displayManager.defaultSession = "none+awesome";
 
     # Configure keymap in X11
     layout = "us";
@@ -74,6 +79,7 @@
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
+    settings.General.Experimental = true;
   };
   services.blueman.enable = true;
 
@@ -120,6 +126,7 @@
     gnumake
     unzip
     unar
+    jq
 
     blueman
 
@@ -135,10 +142,20 @@
     fzf
     ripgrep
 
+    # cursor theme
+    (import ./pkgs/breeze-cursor-theme.nix)
+
     # for i3
     feh
     dunst
-    (import ./pkgs/breeze-cursor-theme.nix {stdenv=stdenv; fetchzip=fetchzip;})
+
+    # for awesome
+    bc
+    acpi
+    rofi
+
+    spotify
+    spotify-tray
   ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -154,6 +171,7 @@
       # hobby
       discord
       spotifyd
+      spotify-tui
 
       # ukagaka
       wine # support 32-bit only
