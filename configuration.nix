@@ -143,6 +143,7 @@
     neovim
     wezterm
     lazygit
+    ghq
     fzf
     ripgrep
 
