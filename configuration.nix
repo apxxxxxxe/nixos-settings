@@ -10,9 +10,10 @@
       ./hardware-configuration.nix
     ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.useOSProber = true;
 
   # Tell Xorg to use the nvidia driver (also valid for Wayland)
   services.xserver.videoDrivers = ["nvidia"];
@@ -54,7 +55,7 @@
   };
 
   fonts = {
-    fonts = with pkgs; [
+    packages = with pkgs; [
       noto-fonts
       noto-fonts-cjk
       noto-fonts-extra
