@@ -11,9 +11,36 @@
     ];
 
   # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+
+  # reference: https://nixos.wiki/wiki/Dual_Booting_NixOS_and_Windows#EFI_with_multiple_disks
+  boot.loader = {
+    efi = {
+      canTouchEfiVariables = true;
+    };
+    grub = {
+      enable = true;
+      devices = [ "nodev" ];
+      efiSupport = true;
+      useOSProber = true;
+    };
+  };
+
+  environment.etc."xdg/user-dirs.defaults".text = ''
+  DESKTOP=Desktop
+  DOCUMENTS=Documents
+  DOWNLOAD=Downloads
+  MUSIC=Music
+  PICTURES=Pictures
+  PUBLICSHARE=Public
+  TEMPLATES=Templates
+  VIDEOS=Videos
+  '';
+
+  fileSystems."/mnt/drive" =
+  { device = "/dev/sda1";
+    fsType = "ntfs-3g"; 
+    options = [ "rw" "uid=1000"];
+  };
 
   # Tell Xorg to use the nvidia driver (also valid for Wayland)
   services.xserver.videoDrivers = ["nvidia"];
@@ -49,7 +76,7 @@
   i18n.inputMethod = {
     enabled = "fcitx5";
     fcitx5.addons = with pkgs; [
-      fcitx5-mozc
+      fcitx5-skk
       fcitx5-gtk
     ];
   };
@@ -136,11 +163,11 @@
     blueman
 
     # essential
+    tmux
     go
     deno
     google-chrome
-    cargo
-    rustc
+    rustup
     neovim
     wezterm
     lazygit
@@ -164,6 +191,8 @@
 
     spotify
     spotify-tray
+
+    neomutt
   ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -219,5 +248,50 @@
   };
 
   # settings on virtualbox
+  # guest
   virtualisation.virtualbox.guest.enable = true;
+
+  # host
+  virtualisation.virtualbox.host.enable = true;
+  virtualisation.virtualbox.host.enableExtensionPack = true;
+  users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
+
+  services.samba = {
+    enable = true;
+    securityType = "user";
+    openFirewall = true;
+    extraConfig = ''
+      workgroup = WORKGROUP
+      server string = smbnix
+      netbios name = smbnix
+      security = user
+      #use sendfile = yes
+      #max protocol = smb2
+      # note: localhost is the ipv6 localhost ::1
+      hosts allow = 192.168.10. 127.0.0.1 localhost
+      hosts deny = 0.0.0.0/0
+      guest account = nobody
+      map to guest = never
+    '';
+    shares = {
+      linuxshare = {
+        path = "/mnt/drive";
+        # browseable = "yes";
+        writable = "yes";
+        "guest ok" = "no";
+        "create mask" = "0644";
+        "directory mask" = "0755";
+        # "force user" = "username";
+        # "force group" = "groupname";
+      };
+    };
+  };
+
+  services.samba-wsdd = {
+    enable = true;
+    openFirewall = true;
+  };
+
+  networking.firewall.enable = true;
+  networking.firewall.allowPing = true;
 }
