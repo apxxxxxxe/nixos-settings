@@ -49,11 +49,11 @@
   hardware.xpadneo.enable = true;
 
   # Enable networking
-  networking = {
-    networkmanager.enable = true;
-    hostName = "nixos"; # Define your hostname.
-    # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  };
+  # networking = {
+  #   networkmanager.enable = true;
+  #   hostName = "nixos"; # Define your hostname.
+  #   # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # };
 
   # Set your time zone.
   time.timeZone = "Asia/Tokyo";
@@ -163,7 +163,7 @@
     blueman
 
     # essential
-    tmux
+    (pkgs.callPackage ./pkgs/tmux-sixel {})
     go
     deno
     google-chrome
@@ -193,6 +193,9 @@
     spotify-tray
 
     neomutt
+    isync
+
+    tree
   ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -228,6 +231,12 @@
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
+  services.cron = {
+    enable = true;
+    # systemCronJobs = [
+    #   "*/5 * * * *      root    date >> /tmp/cron.log"
+    # ];
+  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -241,7 +250,7 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.05"; # Did you read the comment?
+  system.stateVersion = "23.11"; # Did you read the comment?
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
