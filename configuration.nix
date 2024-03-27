@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./modules/rnnoise.nix
     ];
 
   # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
@@ -77,6 +78,7 @@
     enabled = "fcitx5";
     fcitx5.addons = with pkgs; [
       fcitx5-skk
+      fcitx5-mozc
       fcitx5-gtk
     ];
   };
@@ -120,10 +122,6 @@
 
   # Enable sound with pipewire.
   sound.enable = true;
-  hardware.pulseaudio = {
-    enable = false;
-    support32Bit = true;
-  };
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -160,10 +158,9 @@
     unar
     jq
 
-    blueman
-
     # essential
     (pkgs.callPackage ./pkgs/tmux-sixel {})
+    (pkgs.callPackage ./pkgs/mise {})
     go
     deno
     google-chrome
@@ -174,6 +171,9 @@
     ghq
     fzf
     ripgrep
+
+    rnnoise-plugin
+    pulseaudio # for pactl
 
     # cursor theme
     (import ./pkgs/breeze-cursor-theme.nix)
@@ -213,10 +213,15 @@
       spotifyd
       spotify-tui
 
+      anki
+
       # ukagaka
       wine # support 32-bit only
       playonlinux
     ];
+  };
+  programs.steam = {
+    enable = true;
   };
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -277,7 +282,7 @@
       #use sendfile = yes
       #max protocol = smb2
       # note: localhost is the ipv6 localhost ::1
-      hosts allow = 192.168.10. 127.0.0.1 localhost
+      hosts allow = 192.168.20. 127.0.0.1 localhost
       hosts deny = 0.0.0.0/0
       guest account = nobody
       map to guest = never
