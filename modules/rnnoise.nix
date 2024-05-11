@@ -68,7 +68,9 @@ let
   };
 in {
   # environment.variables."LV2_PATH" = "${pkgs.noise-repellent}/lib/lv2";
-  environment.etc."pipewire/pipewire.conf.d/99-input-denoising.conf" = {
-    source = json.generate "source-rnnoise.conf" rnnoise_config;
+  services.pipewire.extraConfig.pipewire = {
+    "99-input-denoising.conf" = {
+      source = json.generate "source-rnnoise.conf" rnnoise_config;
+    };
   };
 }

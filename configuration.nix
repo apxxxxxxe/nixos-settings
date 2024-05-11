@@ -15,18 +15,10 @@ in
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
 
-    # reference: https://nixos.wiki/wiki/Dual_Booting_NixOS_and_Windows#EFI_with_multiple_disks
-    boot.loader = {
-      efi = {
-        canTouchEfiVariables = true;
-      };
-      grub = {
-        enable = true;
-        devices = [ "nodev" ];
-        efiSupport = true;
-        useOSProber = true;
-      };
-    };
+    # Bootloader.
+    boot.loader.grub.enable = true;
+    boot.loader.grub.device = "/dev/sda";
+    boot.loader.grub.useOSProber = true;
 
     environment.etc."xdg/user-dirs.defaults".text = ''
     DESKTOP=Desktop
@@ -101,12 +93,14 @@ in
       displayManager.lightdm.enable = true;
       windowManager.i3.enable = true;
       windowManager.awesome.enable = true;
-      displayManager.defaultSession = "none+awesome";
 
       # Configure keymap in X11
-      layout = "us";
-      xkbVariant = "";
+      xkb = {
+        variant = "";
+        layout = "us";
+      };
     };
+    services.displayManager.defaultSession = "none+awesome";
 
     # Enable CUPS to print documents.
     services.printing.enable = true;
@@ -170,6 +164,7 @@ in
       go
       deno
       google-chrome
+      google-drive-ocamlfuse
       rustup
       neovim
       wezterm
@@ -217,7 +212,7 @@ in
         # hobby
         discord
         spotifyd
-        spotify-tui
+        # spotify-tui
 
         anki
 
@@ -269,12 +264,7 @@ in
 
     # settings on virtualbox
     # guest
-    virtualisation.virtualbox.guest.enable = true;
-
-    # host
-    virtualisation.virtualbox.host.enable = true;
-    virtualisation.virtualbox.host.enableExtensionPack = true;
-    users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
+    # virtualisation.virtualbox.guest.enable = true;
 
     services.samba = {
       enable = true;
