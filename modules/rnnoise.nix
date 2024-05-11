@@ -1,8 +1,8 @@
 { pkgs, ... }:
 
 let
-in {
-  environment.etc."pipewire/pipewire.conf.d/99-input-denoising.conf".text = builtins.toJSON {
+  json = pkgs.formats.json { };
+  rnnoise_config = {
     "context.modules" = [
       {
         name = "libpipewire-module-filter-chain";
@@ -12,6 +12,11 @@ in {
 
           "filter.graph" = {
             nodes = [
+              # {
+              #   type = "lv2";
+              #   name = "noise-repellent";
+              #   plugin = "https://github.com/lucianodato/noise-repellent#new";
+              # }
               {
                 type = "ladspa";
                 name = "rnnoise";
@@ -39,6 +44,31 @@ in {
           };
         };
       }
+      {
+        name = "libpipewire-module-loopback";
+        args = {
+          "node.description" = "CM106 Stereo Pair 2";
+          #target.delay.sec = 1.5;
+          "capture.props" = {
+              "node.name" = "CM106_stereo_pair_2";
+              "media.class" = "Audio/Sink";
+              "audio.position" = "[ FL FR ]";
+          };
+          "playback.props" = {
+              "node.name" = "playback.CM106_stereo_pair_2";
+              "audio.position" = "[ RL RR ]";
+              "target.object" = "rnnoise";
+              "node.dont-reconnect" = true;
+              "stream.dont-remix" = true;
+              "node.passive" = true;
+          };
+        };
+      }
     ];
+  };
+in {
+  # environment.variables."LV2_PATH" = "${pkgs.noise-repellent}/lib/lv2";
+  environment.etc."pipewire/pipewire.conf.d/99-input-denoising.conf" = {
+    source = json.generate "source-rnnoise.conf" rnnoise_config;
   };
 }
