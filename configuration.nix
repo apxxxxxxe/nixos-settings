@@ -80,7 +80,7 @@ in
     fonts = {
       packages = with pkgs; [
         noto-fonts
-        noto-fonts-cjk
+        noto-fonts-cjk-sans
         noto-fonts-extra
         noto-fonts-emoji
         hackgen-nf-font
@@ -117,19 +117,15 @@ in
     hardware.opengl.driSupport32Bit = true;
 
     # Enable sound with pipewire.
-    sound.enable = true;
+    services.pulseaudio.enable = false;
     security.rtkit.enable = true;
-
-    # hardware.pulseaudio.enable = true;
-    # hardware.pulseaudio.support32Bit = true;
-
     services.pipewire = {
       enable = true;
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
       # If you want to use JACK applications, uncomment this
-      jack.enable = true;
+      #jack.enable = true;
 
       # use the example session manager (no others are packaged yet so this is enabled by default,
       # no need to redefine it in your config for now)
@@ -159,8 +155,6 @@ in
       jq
 
       # essential
-      (pkgs.callPackage ./pkgs/tmux-sixel {})
-      (pkgs.callPackage ./pkgs/mise {})
       go
       deno
       google-chrome
@@ -265,42 +259,6 @@ in
     # settings on virtualbox
     # guest
     # virtualisation.virtualbox.guest.enable = true;
-
-    services.samba = {
-      enable = true;
-      securityType = "user";
-      openFirewall = true;
-      extraConfig = ''
-        workgroup = WORKGROUP
-        server string = smbnix
-        netbios name = smbnix
-        security = user
-        #use sendfile = yes
-        #max protocol = smb2
-        # note: localhost is the ipv6 localhost ::1
-        hosts allow = 192.168.20. 192.168.10. 127.0.0.1 localhost
-        hosts deny = 0.0.0.0/0
-        guest account = nobody
-        map to guest = never
-      '';
-      shares = {
-        linuxshare = {
-          path = "/mnt/drive";
-          # browseable = "yes";
-          writable = "yes";
-          "guest ok" = "no";
-          "create mask" = "0644";
-          "directory mask" = "0755";
-          # "force user" = "username";
-          # "force group" = "groupname";
-        };
-      };
-    };
-
-    services.samba-wsdd = {
-      enable = true;
-      openFirewall = true;
-    };
 
     networking.firewall.enable = true;
     networking.firewall.allowPing = true;
