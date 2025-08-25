@@ -14,11 +14,8 @@ in
       ];
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
-
-    # Bootloader.
-    boot.loader.grub.enable = true;
-    boot.loader.grub.device = "/dev/sda";
-    boot.loader.grub.useOSProber = true;
+    boot.loader.systemd-boot.enable = true;
+    boot.loader.efi.canTouchEfiVariables = true;
 
     environment.etc."xdg/user-dirs.defaults".text = ''
     DESKTOP=Desktop
