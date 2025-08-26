@@ -148,6 +148,8 @@ in
       unar
       jq
 
+      xrdp
+
       # essential
       go
       deno
