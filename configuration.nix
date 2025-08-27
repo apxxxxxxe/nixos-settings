@@ -60,7 +60,8 @@ in
     };
 
     i18n.inputMethod = {
-      enabled = "fcitx5";
+      enable = true;
+      type = "fcitx5";
       fcitx5.addons = with pkgs; [
         fcitx5-skk
         fcitx5-mozc
@@ -108,7 +109,7 @@ in
     services.blueman.enable = true;
 
     # for playonlinux and else
-    hardware.opengl.driSupport32Bit = true;
+    hardware.graphics.enable32Bit = true;
 
     # Enable sound with pipewire.
     services.pulseaudio.enable = false;
@@ -150,6 +151,9 @@ in
       unzip
       unar
       jq
+      mise
+      gcc
+      gpp
 
       xrdp
 
