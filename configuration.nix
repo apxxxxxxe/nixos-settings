@@ -35,11 +35,11 @@ in
     hardware.xpadneo.enable = true;
 
     # Enable networking
-    # networking = {
-    #   networkmanager.enable = true;
+    networking = {
+        networkmanager.enable = true;
     #   hostName = "nixos"; # Define your hostname.
     #   # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-    # };
+    };
 
     # Set your time zone.
     time.timeZone = "Asia/Tokyo";
@@ -92,6 +92,9 @@ in
       };
     };
     services.displayManager.defaultSession = "none+awesome";
+    services.xrdp.enable = true;
+    services.xrdp.openFirewall = true;
+    services.xrdp.defaultWindowManager = "awesome";
 
     # Enable CUPS to print documents.
     services.printing.enable = true;
