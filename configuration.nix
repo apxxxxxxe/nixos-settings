@@ -7,10 +7,13 @@ let
 in
   { config, lib, pkgs, ... }:
   {
+    disabledModules = [ "services/networking/xrdp.nix" ];
+
     imports =
       [ # Include the results of the hardware scan.
         ./hardware-configuration.nix
         ./modules/rnnoise.nix
+        ./pkgs/xrdp.nix
       ];
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
