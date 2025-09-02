@@ -47,7 +47,7 @@ in
     # Enable networking
     networking = {
         networkmanager.enable = true;
-    #   hostName = "nixos"; # Define your hostname.
+        hostName = "nixos"; # Define your hostname.
     #   # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
     };
 
