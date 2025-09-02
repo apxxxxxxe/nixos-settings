@@ -11,18 +11,22 @@
   
   outputs = { self, nixpkgs, neovim-src }:
     let
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      forAllSystems = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
     in {
-      packages.${system}.neovim = pkgs.neovim.overrideAttrs (old: {
-        pname = "neovim-master";
-        version = "master-${neovim-src.shortRev or "unknown"}";
-        src = neovim-src;
-        
-        # ビルド時にgitが必要な場合
-        nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.git ];
-      });
+      packages = forAllSystems (system: 
+        let pkgs = nixpkgs.legacyPackages.${system};
+        in {
+          neovim = pkgs.neovim.overrideAttrs (old: {
+            pname = "neovim-master";
+            version = "master-${neovim-src.shortRev or "unknown"}";
+            src = neovim-src;
+            nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.git ];
+          });
+        });
       
-      packages.${system}.default = self.packages.${system}.neovim;
+      # overlayを提供
+      overlay = final: prev: {
+        neovim = self.packages.${final.system}.neovim;
+      };
     };
 }

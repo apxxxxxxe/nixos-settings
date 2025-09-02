@@ -4,7 +4,6 @@
 
 let
   user1 = "applepie";
-  neovim-latest = (import /etc/nixos/flakes/neovim).packages.${pkgs.system}.neovim;
 in
   { config, lib, pkgs, ... }:
   {
@@ -173,7 +172,7 @@ in
       firefox
       google-drive-ocamlfuse
       rustup
-      neovim-latest
+      neovim
       wezterm
       lazygit
       ghq
