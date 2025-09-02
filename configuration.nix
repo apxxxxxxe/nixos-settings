@@ -14,28 +14,12 @@ in
         ./hardware-configuration.nix
         ./modules/rnnoise.nix
         ./pkgs/xrdp.nix
-        <home-manager/nixos>
       ];
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
     boot.loader.grub.enable = true;
     boot.loader.grub.device = "/dev/sda";
     boot.loader.grub.useOSProber = true;
-
-    # home-manager.users."${user1}" = {
-    #   xdg.userDirs = {
-    #     enable = true;
-    #     desktop = "$HOME/Desktop";
-    #     documents = "$HOME/Documents";
-    #     download = "$HOME/Downloads";
-    #     music = "$HOME/Music";
-    #     pictures = "$HOME/Pictures";
-    #     publicShare = "$HOME/Public";
-    #     templates = "$HOME/Templates";
-    #     videos = "$HOME/Videos";
-    #   };
-    #   home.stateVersion = "25.05";
-    # };
 
     # Tell Xorg to use the nvidia driver (also valid for Wayland)
     # services.xserver.videoDrivers = ["nvidia"];
