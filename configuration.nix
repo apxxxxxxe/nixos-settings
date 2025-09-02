@@ -131,6 +131,12 @@ in
     # バイナリのダイナミックリンクをnix storeに向けてくれる
     programs.nix-ld.enable = true;
 
+    programs.firefox = {
+      enable = true;
+      languagePacks = ["ja"];
+    };
+
+
     # List packages installed in system profile. To search, run:
     # $ nix search wget
     environment.systemPackages = with pkgs; [
@@ -154,7 +160,6 @@ in
       # essential
       go
       deno
-      firefox
       google-drive-ocamlfuse
       rustup
       neovim
