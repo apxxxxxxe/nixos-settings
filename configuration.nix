@@ -4,6 +4,7 @@
 
 let
   user1 = "applepie";
+  neovim-latest = (import /etc/nixos/flakes/neovim).packages.${pkgs.system}.neovim;
 in
   { config, lib, pkgs, ... }:
   {
@@ -14,22 +15,28 @@ in
         ./hardware-configuration.nix
         ./modules/rnnoise.nix
         ./pkgs/xrdp.nix
+        <home-manager/nixos>
       ];
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
+    boot.loader.grub.enable = true;
+    boot.loader.grub.device = "/dev/sda";
+    boot.loader.grub.useOSProber = true;
 
-    environment.etc."xdg/user-dirs.defaults".text = ''
-    DESKTOP=Desktop
-    DOCUMENTS=Documents
-    DOWNLOAD=Downloads
-    MUSIC=Music
-    PICTURES=Pictures
-    PUBLICSHARE=Public
-    TEMPLATES=Templates
-    VIDEOS=Videos
-    '';
+    # home-manager.users."${user1}" = {
+    #   xdg.userDirs = {
+    #     enable = true;
+    #     desktop = "$HOME/Desktop";
+    #     documents = "$HOME/Documents";
+    #     download = "$HOME/Downloads";
+    #     music = "$HOME/Music";
+    #     pictures = "$HOME/Pictures";
+    #     publicShare = "$HOME/Public";
+    #     templates = "$HOME/Templates";
+    #     videos = "$HOME/Videos";
+    #   };
+    #   home.stateVersion = "25.05";
+    # };
 
     # Tell Xorg to use the nvidia driver (also valid for Wayland)
     # services.xserver.videoDrivers = ["nvidia"];
@@ -166,7 +173,7 @@ in
       firefox
       google-drive-ocamlfuse
       rustup
-      neovim
+      neovim-latest
       wezterm
       lazygit
       ghq
