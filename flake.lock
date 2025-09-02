@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1756788591,
+        "narHash": "sha256-LOrOfPWpJU/ADWDyVwPv9XNuYPq5KJtmAmSzplpccmE=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "f3d3b4592a73fb64b5423234c01985ea73976596",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
     "neovim-flake": {
       "inputs": {
         "neovim-src": "neovim-src",
@@ -65,6 +85,7 @@
     },
     "root": {
       "inputs": {
+        "home-manager": "home-manager",
         "neovim-flake": "neovim-flake",
         "nixpkgs": "nixpkgs_2"
       }

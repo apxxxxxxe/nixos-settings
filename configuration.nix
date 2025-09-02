@@ -14,7 +14,6 @@ in
         ./hardware-configuration.nix
         ./modules/rnnoise.nix
         ./pkgs/xrdp.nix
-        (import ./xdg-config.nix { username = user1; })
       ];
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
@@ -141,6 +140,8 @@ in
     # List packages installed in system profile. To search, run:
     # $ nix search wget
     environment.systemPackages = with pkgs; [
+      xdg-user-dirs
+
       vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
       wget
       git

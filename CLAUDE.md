@@ -27,6 +27,21 @@ sudo nixos-rebuild --rollback switch
 
 # Update flake inputs
 nix flake update
+
+# Using SUDO_ASKPASS for password prompts (useful for scripts/automation)
+SUDO_ASKPASS=/home/applepie/.local/bin/askpass sudo nixos-rebuild switch --flake .#nixos
+```
+
+### Home Manager Commands
+```bash
+# Apply Home Manager configuration (integrated with NixOS rebuild)
+# Home Manager changes apply automatically with nixos-rebuild
+
+# Switch Home Manager configuration independently
+home-manager switch --flake .#applepie
+
+# Check Home Manager generations
+home-manager generations
 ```
 
 ### Legacy Commands (without flakes)
@@ -53,8 +68,10 @@ nix flake show
 ## Architecture and Structure
 
 ### Core Configuration Files
-- **`flake.nix`**: Flakes configuration defining inputs (nixpkgs, neovim-flake) and system output
+- **`flake.nix`**: Flakes configuration defining inputs (nixpkgs, neovim-flake, home-manager) and system output
 - **`configuration.nix`**: Main system configuration with user setup, desktop environment, packages, and services
+- **`home.nix`**: Home Manager configuration for user-specific settings and XDG directories
+- **`xdg-config.nix`**: XDG configuration module for user directory setup
 - **`hardware-configuration.nix`**: Auto-generated hardware-specific settings (boot, filesystems, drivers)
 - **`install.sh`**: Installation script that replaces `/etc/nixos` with repository content
 
@@ -69,11 +86,12 @@ nix flake show
 ## Configuration Patterns
 
 ### NixOS Conventions Used
-- **Flakes Architecture**: Uses experimental flakes feature with nixpkgs-unstable input
-- User variables defined with let bindings at configuration top (`user1 = "applepie"`)
+- **Flakes Architecture**: Uses experimental flakes feature with nixpkgs-unstable input and Home Manager integration
+- User variables defined with let bindings at configuration top (`user1 = "applepie"`)  
 - Packages organized by functional categories (essential, development, desktop, entertainment)
 - Custom modules imported via `imports = [ ./modules/rnnoise.nix ./pkgs/xrdp.nix ]`
 - Module overlays for custom packages (Neovim flake overlay)
+- Home Manager integrated as NixOS module for user-specific configurations
 - Version pinning for stability (system.stateVersion = "25.05")
 - Explicit unfree package allowance enabled
 
