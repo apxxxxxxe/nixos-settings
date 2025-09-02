@@ -14,6 +14,7 @@ in
         ./hardware-configuration.nix
         ./modules/rnnoise.nix
         ./pkgs/xrdp.nix
+        (import ./xdg-config.nix { username = user1; })
       ];
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
