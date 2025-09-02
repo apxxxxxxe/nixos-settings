@@ -8,22 +8,34 @@ This is a personal NixOS system configuration repository that defines a complete
 
 ## Common Development Commands
 
-### System Management
+### System Management (Flakes)
 ```bash
-# Apply configuration changes
-sudo nixos-rebuild switch
+# Apply configuration changes (flakes)
+sudo nixos-rebuild switch --flake .#nixos
 
-# Test configuration without making it permanent  
-sudo nixos-rebuild test
+# Test configuration without making it permanent (flakes)
+sudo nixos-rebuild test --flake .#nixos
 
-# Build configuration without applying
-sudo nixos-rebuild build
+# Build configuration without applying (flakes)
+sudo nixos-rebuild build --flake .#nixos
 
-# Preview changes without building
-sudo nixos-rebuild dry-build
+# Preview changes without building (flakes)
+sudo nixos-rebuild dry-build --flake .#nixos
 
 # Rollback to previous generation
 sudo nixos-rebuild --rollback switch
+
+# Update flake inputs
+nix flake update
+```
+
+### Legacy Commands (without flakes)
+```bash
+# Apply configuration changes (legacy)
+sudo nixos-rebuild switch
+
+# Test configuration (legacy)
+sudo nixos-rebuild test
 ```
 
 ### Package Management
@@ -31,13 +43,17 @@ sudo nixos-rebuild --rollback switch
 # Search for packages
 nix search nixpkgs packagename
 
-# Update channel (if not using flakes)
-sudo nix-channel --update
+# Update flake inputs
+nix flake update
+
+# Show flake info
+nix flake show
 ```
 
 ## Architecture and Structure
 
 ### Core Configuration Files
+- **`flake.nix`**: Flakes configuration defining inputs (nixpkgs, neovim-flake) and system output
 - **`configuration.nix`**: Main system configuration with user setup, desktop environment, packages, and services
 - **`hardware-configuration.nix`**: Auto-generated hardware-specific settings (boot, filesystems, drivers)
 - **`install.sh`**: Installation script that replaces `/etc/nixos` with repository content
@@ -46,15 +62,18 @@ sudo nix-channel --update
 - **`modules/rnnoise.nix`**: Custom audio processing module implementing RNNoise-based microphone noise cancellation with PipeWire filter chains
 - **`pkgs/`**: Custom package definitions including:
   - `breeze-cursor-theme.nix`: BreezeX cursor theme
-  - `mise/default.nix`: Development environment manager (version 2024.2.5)
+  - `xrdp.nix`: Custom XRDP service module for remote desktop access
   - `tmux-sixel/default.nix`: Enhanced tmux with sixel image support
+- **`flakes/neovim/`**: Separate Neovim configuration as a flake with overlay integration
 
 ## Configuration Patterns
 
 ### NixOS Conventions Used
+- **Flakes Architecture**: Uses experimental flakes feature with nixpkgs-unstable input
 - User variables defined with let bindings at configuration top (`user1 = "applepie"`)
 - Packages organized by functional categories (essential, development, desktop, entertainment)
-- Custom modules imported via `imports = [ ./modules/rnnoise.nix ]`
+- Custom modules imported via `imports = [ ./modules/rnnoise.nix ./pkgs/xrdp.nix ]`
+- Module overlays for custom packages (Neovim flake overlay)
 - Version pinning for stability (system.stateVersion = "25.05")
 - Explicit unfree package allowance enabled
 
@@ -75,28 +94,35 @@ sudo nix-channel --update
 
 ### Hardware Configuration
 - AMD CPU with NVME storage
-- systemd-boot bootloader
-- Network interface auto-configured
+- GRUB bootloader with OS prober enabled (/dev/sda)
+- Network interface auto-configured via NetworkManager
 - Asia/Tokyo timezone with Japanese locale
+- Xbox controller support (xpadneo)
+- Bluetooth enabled with experimental features
 
 ### Desktop Environment
 - Window managers: i3 and awesome (awesome as default)  
-- LightDM display manager
+- LightDM display manager with XRDP remote desktop support
 - Applications: Firefox, Discord, Steam, Spotify, AzPainter, Anki
 - Cursor theme: Custom BreezeX implementation
+- Wine/PlayOnLinux for Windows compatibility
 
 ## Development Workflow
 
-1. Edit configuration files (mainly `configuration.nix`)
-2. Test changes with `sudo nixos-rebuild test`
-3. Apply with `sudo nixos-rebuild switch` when satisfied
-4. Commit changes to git with simple messages ("periodic commit" pattern observed)
-5. Push to remote repository
+1. Edit configuration files (mainly `configuration.nix` or flake inputs)
+2. Test changes with `sudo nixos-rebuild test --flake .#nixos`
+3. Apply with `sudo nixos-rebuild switch --flake .#nixos` when satisfied
+4. Update flake inputs when needed with `nix flake update`
+5. Commit changes to git with simple messages ("periodic commit" pattern observed)
+6. Push to remote repository
 
 ## Important Notes
 
-- This system uses bilingual comments (English/Japanese)
+- **Flakes-based system**: Uses experimental flakes features for reproducible builds
+- This system uses bilingual comments (English/Japanese)  
 - Experimental Nix features (flakes, nix-command) are enabled
-- Firewall is enabled with ping allowed
+- Firewall is enabled with ping allowed, XRDP ports open
 - System includes gaming setup (Steam) and creative tools
 - Custom packages follow proper Nix expression patterns with full metadata
+- GRUB bootloader configured for /dev/sda with OS prober for dual-boot compatibility
+- System includes remote desktop access via XRDP service
