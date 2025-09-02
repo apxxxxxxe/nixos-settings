@@ -1,4 +1,4 @@
-with import <nixpkgs> {}; # bring all of Nixpkgs into scope
+{ stdenv, fetchzip, lib }:
 
 stdenv.mkDerivation rec {
   name = "breezex-icon-theme";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
     cp -r $src/* $out/share/icons/BreezeX-Light/
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "BreezeX Cursore theme";
   };
 }

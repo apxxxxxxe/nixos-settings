@@ -173,7 +173,7 @@ in
       easyeffects
 
       # cursor theme
-      (import ./pkgs/breeze-cursor-theme.nix)
+      (pkgs.callPackage ./pkgs/breeze-cursor-theme.nix {})
 
       # for i3
       feh
