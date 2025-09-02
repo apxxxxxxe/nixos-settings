@@ -163,6 +163,7 @@ in
       mise
       gcc
       gpp
+      nodejs_24
 
       xrdp
 
