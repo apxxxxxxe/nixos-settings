@@ -20,6 +20,17 @@ let
     #!/bin/sh
     . /etc/profile
     ${lib.optionalString cfg.audio.enable "${cfg.audio.package}/libexec/pulsaudio-xrdp-module/pulseaudio_xrdp_init"}
+
+    # xinitrcがあればそちらからセッションを起動して終了
+    if [ -r ~/.xinitrc ]; then
+      . ~/.xinitrc
+      exit 0
+    fi
+    if [ -r /etc/X11/xinit/xinitrc ]; then
+      . /etc/X11/xinit/xinitrc
+      exit 0
+    fi
+
     ${cfg.defaultWindowManager}
     EOF
     chmod +x $out/startwm.sh
