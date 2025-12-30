@@ -68,7 +68,12 @@
   #  /etc/profiles/per-user/applepie/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
+    # HiDPI: GTK
+    GDK_SCALE = "1.5";
+    GDK_DPI_SCALE = "0.5";
+    # HiDPI: Qt
+    QT_AUTO_SCREEN_SCALE_FACTOR = "1";
+    QT_SCALE_FACTOR = "2";
   };
 
   # XDG user directories in English
@@ -82,6 +87,35 @@
     publicShare = "${config.home.homeDirectory}/Public";
     templates = "${config.home.homeDirectory}/Templates";
     videos = "${config.home.homeDirectory}/Videos";
+  };
+
+  # HiDPI: Xresources設定
+  xresources.properties = {
+    "Xft.dpi" = 192;
+    "Xft.autohint" = 0;
+    "Xft.lcdfilter" = "lcddefault";
+    "Xft.hintstyle" = "hintfull";
+    "Xft.hinting" = 1;
+    "Xft.antialias" = 1;
+    "Xft.rgba" = "rgb";
+    "Xcursor.size" = 48;
+  };
+
+  # HiDPI: カーソル設定
+  home.pointerCursor = {
+    name = "BreezeX-Light";
+    package = pkgs.callPackage ./pkgs/breeze-cursor-theme.nix {};
+    size = 48;
+    gtk.enable = true;
+    x11.enable = true;
+  };
+
+  # HiDPI: GTK設定
+  gtk = {
+    enable = true;
+    gtk3.extraConfig = {
+      gtk-cursor-theme-size = 48;
+    };
   };
 
   # Let Home Manager install and manage itself.

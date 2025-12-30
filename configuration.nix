@@ -4,6 +4,7 @@
 
 let
   user1 = "applepie";
+	useGnome = false;
 in
   { config, lib, pkgs, ... }:
   {
@@ -14,12 +15,11 @@ in
         ./hardware-configuration.nix
         ./modules/rnnoise.nix
         ./pkgs/xrdp.nix
-      ];
+      ] ++ (if useGnome then [ ./modules/desktop/gnome.nix ] else [ ./modules/desktop/wm.nix ]);
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
-    boot.loader.grub.enable = true;
-    boot.loader.grub.device = "/dev/sda";
-    boot.loader.grub.useOSProber = true;
+    boot.loader.systemd-boot.enable = true;
+    boot.loader.efi.canTouchEfiVariables = true;
 
     # Tell Xorg to use the nvidia driver (also valid for Wayland)
     # services.xserver.videoDrivers = ["nvidia"];
@@ -72,24 +72,6 @@ in
       ];
     };
 
-    # Enable i3 window manager.
-    services.xserver = {
-      enable = true;
-      displayManager.lightdm.enable = true;
-      windowManager.i3.enable = true;
-      windowManager.awesome.enable = true;
-
-      # Configure keymap in X11
-      xkb = {
-        variant = "";
-        layout = "us";
-      };
-    };
-    services.displayManager.defaultSession = "none+awesome";
-    services.xrdp.enable = true;
-    services.xrdp.openFirewall = true;
-    services.xrdp.defaultWindowManager = "awesome";
-
     # Enable CUPS to print documents.
     services.printing.enable = true;
 
@@ -127,6 +109,7 @@ in
     nixpkgs.config.allowUnfree = true;
 
     programs.zsh.enable = true;
+    programs.dconf.enable = true;
 
     # バイナリのダイナミックリンクをnix storeに向けてくれる
     programs.nix-ld.enable = true;
@@ -177,17 +160,6 @@ in
       # cursor theme
       (pkgs.callPackage ./pkgs/breeze-cursor-theme.nix {})
 
-      # for i3
-      feh
-      dunst
-
-      # for awesome
-      bc
-      acpi
-      rofi
-      pavucontrol
-      pamixer
-
       spotify
       spotify-tray
 
@@ -195,6 +167,9 @@ in
       isync
 
       tree
+
+      # VPN
+      wireguard-tools
     ];
 
     # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -206,22 +181,22 @@ in
       packages = with pkgs; [
         # painting
         azpainter
+				aseprite
 
         # hobby
         discord
         spotifyd
-        # spotify-tui
 
         anki
+
+				remmina
 
         # ukagaka
         wine # support 32-bit only
         playonlinux
       ];
     };
-    programs.steam = {
-      enable = true;
-    };
+    programs.steam.enable = true;
 
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
@@ -254,7 +229,7 @@ in
     # this value at the release version of the first install of this system.
     # Before changing this value read the documentation for this option
     # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-    system.stateVersion = "25.05"; # Did you read the comment?
+    system.stateVersion = "25.11"; # Did you read the comment?
 
     nix.settings = {
       experimental-features = ["nix-command" "flakes"];
