@@ -69,7 +69,7 @@
   #
   home.sessionVariables = {
     # HiDPI: GTK
-    GDK_SCALE = "1.5";
+    GDK_SCALE = "1.25";
     GDK_DPI_SCALE = "0.5";
     # HiDPI: Qt
     QT_AUTO_SCREEN_SCALE_FACTOR = "1";

@@ -4,7 +4,8 @@
 
 let
   user1 = "applepie";
-	useGnome = false;
+  # デスクトップ選択: "wm", "gnome", "kde" のいずれか
+  desktopType = "kde";
 in
   { config, lib, pkgs, ... }:
   {
@@ -15,17 +16,27 @@ in
         ./hardware-configuration.nix
         ./modules/rnnoise.nix
         ./pkgs/xrdp.nix
-      ] ++ (if useGnome then [ ./modules/desktop/gnome.nix ] else [ ./modules/desktop/wm.nix ]);
+      ] ++ (
+        if desktopType == "gnome" then [ ./modules/desktop/gnome.nix ]
+        else if desktopType == "kde" then [ ./modules/desktop/kde.nix ]
+        else [ ./modules/desktop/wm.nix ]
+      );
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
+
+    # iptables modules for Podman networking
+    boot.kernelModules = [ "ip_tables" "iptable_nat" ];
 
     # Tell Xorg to use the nvidia driver (also valid for Wayland)
     # services.xserver.videoDrivers = ["nvidia"];
 
     # xbox controller
     hardware.xpadneo.enable = true;
+
+    # Surface kernel: use stable instead of longterm
+    hardware.microsoft-surface.kernelVersion = "stable";
 
     # Enable networking
     networking = {
@@ -114,6 +125,13 @@ in
     # バイナリのダイナミックリンクをnix storeに向けてくれる
     programs.nix-ld.enable = true;
 
+    # gdk-pixbuf画像ローダーの有効化（StatusNotifier用SVGアイコン対応）
+    programs.gdk-pixbuf = {
+      modulePackages = with pkgs; [
+        librsvg      # SVG画像フォーマット対応
+      ];
+    };
+
     programs.firefox = {
       enable = true;
       languagePacks = ["ja"];
@@ -159,6 +177,8 @@ in
 
       # cursor theme
       (pkgs.callPackage ./pkgs/breeze-cursor-theme.nix {})
+      kdePackages.breeze-icons
+			papirus-icon-theme
 
       spotify
       spotify-tray
@@ -170,13 +190,16 @@ in
 
       # VPN
       wireguard-tools
+
+      # WinApps
+      podman-compose
     ];
 
     # Define a user account. Don't forget to set a password with ‘passwd’.
     users.users."${user1}" = {
       isNormalUser = true;
       description = user1;
-      extraGroups = [ "networkmanager" "wheel" ];
+      extraGroups = [ "networkmanager" "wheel" "video" "kvm" ]; # video: for backlight control via udev rules, kvm: for WinApps
       shell = pkgs.zsh;
       packages = with pkgs; [
         # painting
@@ -193,7 +216,7 @@ in
 
         # ukagaka
         wine # support 32-bit only
-        playonlinux
+        # playonlinux
       ];
     };
     programs.steam.enable = true;
@@ -238,6 +261,14 @@ in
     # settings on virtualbox
     # guest
     # virtualisation.virtualbox.guest.enable = true;
+
+    # Podman for WinApps
+    virtualisation.podman = {
+      enable = true;
+      dockerCompat = true;
+      defaultNetwork.settings.dns_enabled = true;
+      extraPackages = [ pkgs.crun ];  # rootless KVM に必須
+    };
 
     networking.firewall.enable = true;
     networking.firewall.allowPing = true;
