@@ -4,9 +4,6 @@
 
 let
   user1 = "applepie";
-  # デスクトップ選択: "wm", "gnome", "kde" のいずれか
-  desktopType = "kde";
-  enableWindowsVM = true;
 in
   { config, lib, pkgs, ... }:
   {
@@ -17,15 +14,20 @@ in
         ./hardware-configuration.nix
         ./modules/rnnoise.nix
         ./modules/windows-vm
+        ./modules/desktop  # デスクトップ環境モジュール（wm.nix を含む）
         ./pkgs/xrdp.nix
-      ] ++ (
-        if desktopType == "gnome" then [ ./modules/desktop/gnome.nix ]
-        else if desktopType == "kde" then [ ./modules/desktop/kde.nix ]
-        else [ ./modules/desktop/wm.nix ]
-      );
+      ];
 
-    # Windows VM (enable/disable via enableWindowsVM variable above)
-    services.windowsVM.enable = enableWindowsVM;
+    # Windows VM
+    services.windowsVM.enable = true;
+
+    # Desktop environment: "wm", "gnome", "kde"
+    services.desktop.type = "kde";
+    # WM 設定（services.desktop.type = "wm" のときに適用）
+    services.desktopWM = {
+      defaultWM = "qtile";
+      dpi = 96;
+    };
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
     boot.loader.systemd-boot.enable = true;

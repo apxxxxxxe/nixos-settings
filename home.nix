@@ -68,12 +68,8 @@
   #  /etc/profiles/per-user/applepie/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # HiDPI: GTK
-    GDK_SCALE = "1.25";
-    GDK_DPI_SCALE = "0.5";
-    # HiDPI: Qt
-    QT_AUTO_SCREEN_SCALE_FACTOR = "1";
-    QT_SCALE_FACTOR = "2";
+    # HiDPI 設定は wm.nix に移動（desktopType = "wm" のとき）
+    # KDE/GNOME は各 DE が DPI を管理
   };
 
   # XDG user directories in English
@@ -89,35 +85,9 @@
     videos = "${config.home.homeDirectory}/Videos";
   };
 
-  # HiDPI: Xresources設定
-  xresources.properties = {
-    "Xft.dpi" = 192;
-    "Xft.autohint" = 0;
-    "Xft.lcdfilter" = "lcddefault";
-    "Xft.hintstyle" = "hintfull";
-    "Xft.hinting" = 1;
-    "Xft.antialias" = 1;
-    "Xft.rgba" = "rgb";
-    "Xcursor.size" = 48;
-  };
-
-  # HiDPI: カーソル設定
-  home.pointerCursor = {
-    name = "BreezeX-Light";
-    package = pkgs.callPackage ./pkgs/breeze-cursor-theme.nix {};
-    size = 48;
-    gtk.enable = true;
-    x11.enable = true;
-  };
-
-  # HiDPI: GTK設定
-  gtk = {
-    enable = true;
-    gtk2.force = true;  # KDE がシンボリックリンクを実ファイルに変換する問題を回避
-    gtk3.extraConfig = {
-      gtk-cursor-theme-size = 48;
-    };
-  };
+  # カーソル/GTK 設定:
+  # - WM 環境: modules/desktop/wm.nix で dpi に連動して管理
+  # - KDE/GNOME: 各 DE の設定に任せる（パッケージは configuration.nix で提供）
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
