@@ -15,6 +15,7 @@ in
       [ # Include the results of the hardware scan.
         ./hardware-configuration.nix
         ./modules/rnnoise.nix
+        ./modules/windows-vm
         ./pkgs/xrdp.nix
       ] ++ (
         if desktopType == "gnome" then [ ./modules/desktop/gnome.nix ]
@@ -156,6 +157,7 @@ in
       mise
       gcc
       gpp
+      pkgsCross.mingw32.buildPackages.gcc  # i686-w64-mingw32-gcc
       nodejs_24
 
       xrdp
@@ -191,16 +193,13 @@ in
       # VPN
       wireguard-tools
 
-      # WinApps
-      podman-compose
-      freerdp3
     ];
 
     # Define a user account. Don't forget to set a password with ‘passwd’.
     users.users."${user1}" = {
       isNormalUser = true;
       description = user1;
-      extraGroups = [ "networkmanager" "wheel" "video" "kvm" ]; # video: for backlight control via udev rules, kvm: for WinApps
+      extraGroups = [ "networkmanager" "wheel" "video" "kvm" ]; # video: for backlight control via udev rules, kvm: for Windows VM
       shell = pkgs.zsh;
       packages = with pkgs; [
         # painting
@@ -263,14 +262,6 @@ in
     # settings on virtualbox
     # guest
     # virtualisation.virtualbox.guest.enable = true;
-
-    # Podman for WinApps
-    virtualisation.podman = {
-      enable = true;
-      dockerCompat = true;
-      defaultNetwork.settings.dns_enabled = true;
-      extraPackages = [ pkgs.crun ];  # rootless KVM に必須
-    };
 
     networking.firewall.enable = true;
     networking.firewall.allowPing = true;

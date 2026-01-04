@@ -1,0 +1,236 @@
+# winget-config.yaml
+# WinGet DSC Configuration for declarative Windows setup
+# Applied automatically during OEM setup phase
+
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+properties:
+  configurationVersion: 0.2.0
+
+  # 前提条件のチェック
+  assertions:
+    - resource: Microsoft.Windows.Developer/OsVersion
+      directives:
+        description: Verify minimum OS version (Windows 11 23H2)
+        allowPrerelease: true
+      settings:
+        MinVersion: "10.0.22631"
+
+  resources:
+    # ========================================
+    # 開発者モードの有効化
+    # ========================================
+    - resource: Microsoft.Windows.Developer/DeveloperMode
+      directives:
+        description: Enable Developer Mode
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+
+    # ========================================
+    # エディタ・開発ツール
+    # ========================================
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: neovim
+      directives:
+        description: Install Neovim
+        allowPrerelease: true
+      settings:
+        id: Neovim.Neovim
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: vscode
+      directives:
+        description: Install Visual Studio Code
+        allowPrerelease: true
+      settings:
+        id: Microsoft.VisualStudioCode
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: git
+      directives:
+        description: Install Git
+        allowPrerelease: true
+      settings:
+        id: Git.Git
+        source: winget
+        ensure: Present
+
+    # ========================================
+    # ターミナル・シェル
+    # ========================================
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: windows-terminal
+      directives:
+        description: Install Windows Terminal
+        allowPrerelease: true
+      settings:
+        id: Microsoft.WindowsTerminal
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: powershell
+      directives:
+        description: Install PowerShell 7
+        allowPrerelease: true
+      settings:
+        id: Microsoft.PowerShell
+        source: winget
+        ensure: Present
+
+    # ========================================
+    # ユーティリティ
+    # ========================================
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: 7zip
+      directives:
+        description: Install 7-Zip
+        allowPrerelease: true
+      settings:
+        id: 7zip.7zip
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: everything
+      directives:
+        description: Install Everything Search
+        allowPrerelease: true
+      settings:
+        id: voidtools.Everything
+        source: winget
+        ensure: Present
+
+    # ========================================
+    # 開発環境・言語
+    # ========================================
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: golang
+      directives:
+        description: Install Go
+        allowPrerelease: true
+      settings:
+        id: GoLang.Go
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: rustup
+      directives:
+        description: Install Rust (rustup)
+        allowPrerelease: true
+      settings:
+        id: Rustlang.Rustup
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: github-cli
+      directives:
+        description: Install GitHub CLI
+        allowPrerelease: true
+      settings:
+        id: GitHub.cli
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: lazygit
+      directives:
+        description: Install lazygit
+        allowPrerelease: true
+      settings:
+        id: JesseDuffield.lazygit
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: ghq
+      directives:
+        description: Install ghq
+        allowPrerelease: true
+      settings:
+        id: x-motemen.ghq
+        source: winget
+        ensure: Present
+
+    # ========================================
+    # ビルドツール・ランタイム
+    # ========================================
+    # - resource: Microsoft.WinGet.DSC/WinGetPackage
+    #   id: vs-buildtools
+    #   directives:
+    #     description: Install Visual Studio 2022 Build Tools
+    #     allowPrerelease: true
+    #   settings:
+    #     id: Microsoft.VisualStudio.2022.BuildTools
+    #     source: winget
+    #     ensure: Present
+
+    # - resource: Microsoft.WinGet.DSC/WinGetPackage
+    #   id: vcredist-x64
+    #   directives:
+    #     description: Install VC++ Redistributable (x64)
+    #     allowPrerelease: true
+    #   settings:
+    #     id: Microsoft.VCRedist.2015+.x64
+    #     source: winget
+    #     ensure: Present
+
+    # - resource: Microsoft.WinGet.DSC/WinGetPackage
+    #   id: vcredist-x86
+    #   directives:
+    #     description: Install VC++ Redistributable (x86)
+    #     allowPrerelease: true
+    #   settings:
+    #     id: Microsoft.VCRedist.2015+.x86
+    #     source: winget
+    #     ensure: Present
+
+    # ========================================
+    # 画像処理
+    # ========================================
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: imagemagick
+      directives:
+        description: Install ImageMagick
+        allowPrerelease: true
+      settings:
+        id: ImageMagick.ImageMagick
+        source: winget
+        ensure: Present
+
+    # ========================================
+    # Windows 設定
+    # ========================================
+    - resource: Microsoft.Windows.Developer/ShowSecondsInClock
+      directives:
+        description: Show seconds in system clock
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+
+    - resource: Microsoft.Windows.Developer/EnableDarkMode
+      directives:
+        description: Enable dark mode
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+        RestartExplorer: true
+
+    # ========================================
+    # レジストリ設定例
+    # ========================================
+    - resource: PSDscResources/Registry
+      directives:
+        description: Disable Windows Copilot
+      settings:
+        Key: HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\WindowsCopilot
+        ValueName: TurnOffWindowsCopilot
+        ValueData: "1"
+        ValueType: Dword
+        Ensure: Present
