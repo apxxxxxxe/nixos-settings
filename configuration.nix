@@ -36,7 +36,7 @@ in
     hardware.xpadneo.enable = true;
 
     # Surface kernel: use stable instead of longterm
-    hardware.microsoft-surface.kernelVersion = "stable";
+    # hardware.microsoft-surface.kernelVersion = "stable";
 
     # Enable networking
     networking = {
@@ -193,6 +193,7 @@ in
 
       # WinApps
       podman-compose
+      freerdp3
     ];
 
     # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -215,7 +216,8 @@ in
 				remmina
 
         # ukagaka
-        wine # support 32-bit only
+        wine
+				winetricks
         # playonlinux
       ];
     };

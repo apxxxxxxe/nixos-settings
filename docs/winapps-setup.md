@@ -126,8 +126,12 @@ Win + R → gpedit.msc → Enter
 FreeRDP で接続テスト:
 
 ```bash
-xfreerdp3 /u:YourWindowsUsername /p:YourWindowsPassword /v:127.0.0.1:3389
+xfreerdp3 /u:YourWindowsUsername /p:YourWindowsPassword /v:127.0.0.1:3389 /sec:tls /cert:ignore
 ```
+
+**オプション説明:**
+- `/sec:tls` - NLA をバイパスして TLS で接続
+- `/cert:ignore` - 自己署名証明書を許可
 
 成功すると Windows デスクトップが表示されます。
 
