@@ -27,7 +27,7 @@
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
-        nixos-hardware.nixosModules.microsoft-surface-pro-intel
+        # nixos-hardware.nixosModules.microsoft-surface-pro-intel
         ./configuration.nix
         home-manager.nixosModules.home-manager
         {
