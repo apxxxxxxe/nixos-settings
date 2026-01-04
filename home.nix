@@ -113,6 +113,7 @@
   # HiDPI: GTK設定
   gtk = {
     enable = true;
+    gtk2.force = true;  # KDE がシンボリックリンクを実ファイルに変換する問題を回避
     gtk3.extraConfig = {
       gtk-cursor-theme-size = 48;
     };
