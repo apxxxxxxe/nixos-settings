@@ -2,16 +2,10 @@
 # NixOS module for declarative Windows 11 VM management using dockur/windows
 { config, pkgs, lib, ... }:
 
+with lib;
+
 let
-  # VM configuration
-  vmConfig = {
-    name = "windows";
-    version = "win11";
-    ram = "4G";
-    cpuCores = "4";
-    diskSize = "64G";
-    dataDir = "/var/lib/windows-vm";
-  };
+  cfg = config.services.windowsVM;
 
   # OEM files for automatic setup during Windows installation
   oemFiles = pkgs.runCommand "windows-oem" {} ''
@@ -22,73 +16,109 @@ let
   '';
 
 in {
-  # Required packages
-  environment.systemPackages = with pkgs; [
-    freerdp3
-  ];
+  options.services.windowsVM = {
+    enable = mkEnableOption "Windows 11 VM via Podman (dockur/windows)";
 
-  # Podman configuration
-  virtualisation = {
-    podman = {
-      enable = true;
-      dockerCompat = true;
-      defaultNetwork.settings.dns_enabled = true;
+    name = mkOption {
+      type = types.str;
+      default = "windows";
+      description = "Container name for the Windows VM";
     };
 
-    oci-containers = {
-      backend = "podman";
+    ram = mkOption {
+      type = types.str;
+      default = "4G";
+      description = "RAM size for the VM (e.g., 4G, 8G)";
+    };
 
-      containers.${vmConfig.name} = {
-        image = "docker.io/dockurr/windows:latest";
-        user = "root:root";
-        autoStart = false;  # Manual start: sudo systemctl start podman-windows.service
+    cpuCores = mkOption {
+      type = types.str;
+      default = "4";
+      description = "Number of CPU cores for the VM";
+    };
 
-        environment = {
-          VERSION = vmConfig.version;
-          RAM_SIZE = vmConfig.ram;
-          CPU_CORES = vmConfig.cpuCores;
-          DISK_SIZE = vmConfig.diskSize;
-          # Japanese language and keyboard
-          LANGUAGE = "Japanese";
-          REGION = "ja-JP";
-          # User credentials
-          USERNAME = "user";
-          PASSWORD = "password";
-        };
+    diskSize = mkOption {
+      type = types.str;
+      default = "64G";
+      description = "Disk size for the VM (e.g., 64G, 128G)";
+    };
 
-        ports = [
-          "127.0.0.1:8006:8006"       # Web VNC access
-          "127.0.0.1:3389:3389/tcp"   # RDP
-          "127.0.0.1:3389:3389/udp"   # RDP
-        ];
-
-        volumes = [
-          "${vmConfig.dataDir}:/storage"
-          "${oemFiles}:/oem:ro"
-        ];
-
-        extraOptions = [
-          "--device=/dev/kvm"
-          "--device=/dev/net/tun"
-          "--cap-add=NET_ADMIN"
-          "--stop-timeout=120"
-        ];
-      };
+    dataDir = mkOption {
+      type = types.path;
+      default = /var/lib/windows-vm;
+      description = "Directory for VM persistent storage";
     };
   };
 
-  # Create data directory
-  systemd.tmpfiles.rules = [
-    "d ${vmConfig.dataDir} 0755 root root -"
-  ];
+  config = mkIf cfg.enable {
+    # Required packages
+    environment.systemPackages = with pkgs; [
+      freerdp3
+    ];
 
-  # Shell aliases for convenience
-  programs.zsh.shellAliases = {
-    win-start = "sudo systemctl start podman-windows.service";
-    win-stop = "sudo systemctl stop podman-windows.service";
-    win-status = "sudo systemctl status podman-windows.service";
-    win-rdp = "xfreerdp /v:127.0.0.1:3389 /u:user /dynamic-resolution /sound /microphone";
-    win-web = "xdg-open http://127.0.0.1:8006";
-    win-reset = "sudo systemctl stop podman-windows.service; sudo rm -f ${vmConfig.dataDir}/data.img ${vmConfig.dataDir}/windows.* && echo 'VM deleted. Run win-start to reinstall.'";
+    # Podman configuration
+    virtualisation = {
+      podman = {
+        enable = true;
+        dockerCompat = true;
+        defaultNetwork.settings.dns_enabled = true;
+      };
+
+      oci-containers = {
+        backend = "podman";
+
+        containers.${cfg.name} = {
+          image = "docker.io/dockurr/windows:latest";
+          user = "root:root";
+          autoStart = false;  # Manual start: sudo systemctl start podman-windows.service
+
+          environment = {
+            VERSION = "win11";
+            RAM_SIZE = cfg.ram;
+            CPU_CORES = cfg.cpuCores;
+            DISK_SIZE = cfg.diskSize;
+            # Japanese language and keyboard
+            LANGUAGE = "Japanese";
+            REGION = "ja-JP";
+            # User credentials
+            USERNAME = "user";
+            PASSWORD = "password";
+          };
+
+          ports = [
+            "127.0.0.1:8006:8006"       # Web VNC access
+            "127.0.0.1:3389:3389/tcp"   # RDP
+            "127.0.0.1:3389:3389/udp"   # RDP
+          ];
+
+          volumes = [
+            "${toString cfg.dataDir}:/storage"
+            "${oemFiles}:/oem:ro"
+          ];
+
+          extraOptions = [
+            "--device=/dev/kvm"
+            "--device=/dev/net/tun"
+            "--cap-add=NET_ADMIN"
+            "--stop-timeout=120"
+          ];
+        };
+      };
+    };
+
+    # Create data directory
+    systemd.tmpfiles.rules = [
+      "d ${toString cfg.dataDir} 0755 root root -"
+    ];
+
+    # Shell aliases for convenience
+    programs.zsh.shellAliases = {
+      win-start = "sudo systemctl start podman-${cfg.name}.service";
+      win-stop = "sudo systemctl stop podman-${cfg.name}.service";
+      win-status = "sudo systemctl status podman-${cfg.name}.service";
+      win-rdp = "xfreerdp /v:127.0.0.1:3389 /u:user /dynamic-resolution /sound /microphone";
+      win-web = "xdg-open http://127.0.0.1:8006";
+      win-reset = "sudo systemctl stop podman-${cfg.name}.service; sudo rm -f ${toString cfg.dataDir}/data.img ${toString cfg.dataDir}/windows.* && echo 'VM deleted. Run win-start to reinstall.'";
+    };
   };
 }

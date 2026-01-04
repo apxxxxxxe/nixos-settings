@@ -6,6 +6,7 @@ let
   user1 = "applepie";
   # デスクトップ選択: "wm", "gnome", "kde" のいずれか
   desktopType = "kde";
+  enableWindowsVM = true;
 in
   { config, lib, pkgs, ... }:
   {
@@ -22,6 +23,9 @@ in
         else if desktopType == "kde" then [ ./modules/desktop/kde.nix ]
         else [ ./modules/desktop/wm.nix ]
       );
+
+    # Windows VM (enable/disable via enableWindowsVM variable above)
+    services.windowsVM.enable = enableWindowsVM;
 
     # Bootloader: 新規インストール時は初期値を元ファイルからコピーすること
     boot.loader.systemd-boot.enable = true;
